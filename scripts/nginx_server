@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Script to start Nginx server.
+# chkconfig: - 90 10
+# description:  Nginx server
+#
+.  /etc/rc.d/init.d/functions
+
+case "$1" in
+start)
+    # Start Nginx server
+    echo "Start Nginx ......"
+    /usr/local/nginx/sbin/nginx
+;;
+stop)
+    # Stop Nginx server
+    echo "Stop Nginx ......"
+    /usr/local/nginx/sbin/nginx -s stop
+;;
+reload)
+    # Reload Nginx server
+    echo "Reload Nginx ......"
+    /usr/local/nginx/sbin/nginx -s reload
+;;
+restart)
+    # Restart Nginx server
+    echo "Stop Nginx ......"
+    /usr/local/nginx/sbin/nginx -s stop
+    echo "Start Nginx ......"
+    /usr/local/nginx/sbin/nginx
+;;
+status)
+    # Status
+    ngstatus=`netstat -nltp | grep nginx`
+    if [ "$ngstatus" = "" ];then
+        echo "Nginx is not running"
+    else
+        echo "Nginx is running"
+    fi
+;;
+*)
+    echo "$0: Usage: $0 {start|stop|reload|restart|status}"
+    exit 1
+;;
+esac

@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# Script to start uWSGI server.
+# chkconfig: - 90 10
+# description:  uWSGI server
+#
+. /etc/rc.d/init.d/functions
+
+start(){
+    # Start uWSGI server
+    echo "Start uWSGI ......"
+    /usr/local/bin/uwsgi --ini /uwsgi/uwsgi8888.ini
+}
+
+stop(){
+    # Stop uWSGI server
+    echo "Stop uWSGI ......"
+    /usr/local/bin/uwsgi --stop /uwsgi/uwsgi.pid
+}
+
+reload(){
+    # Reload uWSGI server
+    echo "Reload uWSGI ......"
+    /usr/local/bin/uwsgi --reload /uwsgi/uwsgi.pid
+}
+
+case "$1" in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    reload)
+        reload
+    ;;
+    status)
+        # Status
+        appstatus=`netstat -nltp | grep uwsgi`
+        if [ "$appstatus" = "" ];then
+            echo "uWSGI is not running"
+        else
+            echo "uWSGI is running"
+        fi
+    ;;
+    *)
+        echo "$0: Usage: $0 {start|stop|reload|status}"
+        exit 1
+    ;;
+esac
