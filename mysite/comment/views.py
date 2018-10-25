@@ -26,7 +26,7 @@ def update_comment(request):
         comment.save()
 
         # 发送邮件通知
-        comment.send_mail()
+        # comment.send_mail()
 
         # 返回数据
         data['status'] = 'SUCCESS'

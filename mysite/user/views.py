@@ -6,10 +6,11 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.http import JsonResponse
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
 from django.conf import settings
 from .forms import LoginForm, RegForm, ChangeNicknameForm, BindEmailForm, ChangePasswordForm, ForgotPasswordForm
 from .models import Profile
+from .tasks import send_mail_util
 
 
 def login_for_medal(request):
@@ -131,13 +132,12 @@ def send_verification_code(request):
             request.session['send_code_time'] = now
             
             # 发送邮件
-            send_mail(
-                '绑定邮箱',
-                '验证码：%s' % code,
-                settings.EMAIL_HOST_USER, 
-                [email],
-                fail_silently=False,
-            )
+            subject = '绑定邮箱'
+            text = '验证码：%s' % code
+
+            # celery管理发送队列
+            send_mail_util.delay(subject, text, email)
+            
             data['status'] = 'SUCCESS'
     else:
         data['status'] = 'ERROR'
