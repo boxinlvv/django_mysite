@@ -1,12 +1,19 @@
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.contrib.contenttypes.models import ContentType
 
 from .models import Blog, BlogType
 from read_statistics.utils import read_statistics_once_read
 
+from django.http import HttpResponse
+
+def search(request):
+    searchword = request.GET.get('searchword')
+    search_blog_list = Blog.objects.filter(Q(title__icontains=searchword) | Q(content__icontains=searchword))
+    context = get_blog_list_common_data(request, search_blog_list)
+    return render(request, 'blog/blog_list.html', context)
 
 def get_blog_list_common_data(request, blogs_all_list):
     paginator = Paginator(blogs_all_list, settings.EACH_PAGE_BLOGS_NUMBER)
